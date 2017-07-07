@@ -6,7 +6,7 @@ import Train from './Train';
 export class Admin extends React.Component {
 
   render() {
-    const { trains, updateTrains } = this.props;
+    const { trains, updateTrains, authStatus } = this.props;
 
     return (
       <div id="wrapper">
@@ -18,6 +18,7 @@ export class Admin extends React.Component {
               {...train}
               updateTrains={updateTrains}
               canEdit={true}
+              token={authStatus.token}
             />
           )}
         </div>

@@ -12,6 +12,7 @@
 
 body {
   color: var(--dark);
+  /*color: red;*/
   font-weight: lighter;
   font: 400 15px/22px 'Open Sans', 'Helvetica Neue', Sans-serif;
   font-smoothing: antialiased;
