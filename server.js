@@ -1,7 +1,3 @@
-// =================================================================
-// require all necessary packages & our .env config file ===========
-// =================================================================
-
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -10,13 +6,6 @@ const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken')
 const config = require('dotenv').config()
 
-
-
-
-// =================================================================
-// app setup & configuration =======================================
-// =================================================================
-
 app.locals.trains = [
   { id: 1, line: 'green', status: 'running' },
   { id: 2, line: 'blue', status: 'delayed' },
@@ -24,7 +13,6 @@ app.locals.trains = [
   { id: 4, line: 'orange', status: 'maintenance' }
 ];
 
-// Use body parser so we can get info from POST/URL parameters
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
@@ -37,7 +25,6 @@ app.set('secretKey', config.CLIENT_SECRET);
 
 const checkAuth = (request, response, next) => {
 
-  // Check headers/POST body/URL params for an authorization token
   const token = request.body.token ||
                 request.param('token') ||
                 request.headers['authorization'];
@@ -45,7 +32,6 @@ const checkAuth = (request, response, next) => {
   if (token) {
     jwt.verify(token, app.get('secretKey'), (error, decoded) => {
 
-    // If the token is invalid or expired, respond with an error
     if (error) {
       return response.status(403).send({
         success: false,
@@ -53,8 +39,6 @@ const checkAuth = (request, response, next) => {
       });
     }
 
-    // If the token is valid, save the decoded version to the
-    // request for use in other routes & continue on with next()
     else {
       request.decoded = decoded;
       next();
@@ -70,27 +54,15 @@ const checkAuth = (request, response, next) => {
   }
 };
 
-
-
-// =================================================================
-// API Endpoints ===================================================
-// =================================================================
-
-// This is all you baby!
-
-// Authentication/Login Endpoint
 app.post('/authenticate', (req, res) => {
   const user = req.body
 
-  // If the user enters credentials that don't match our hard-coded
-  // credentials in our .env configuration file, send a JSON error
   if(user.username !== config.USERNAME ||  user.password !== config.PASSWORD) {
     res.status(403).send({
       success: false,
       message: 'Invalid Credentials'
     })
   }
-  // If the credentials are accurate, create a token and send it back
   else {
     let token = jwt.sign(user, app.get('secretKey'), {
       expiresIn: 172800  //seconds
@@ -120,12 +92,6 @@ app.patch('/api/v1/trains/:id', checkAuth, (request, response) => {
 
   return response.json(app.locals.trains);
 });
-
-
-
-// =================================================================
-// start the server ================================================
-// =================================================================
 
 app.listen(3001);
 console.log('Listening on http://localhost:3001');
